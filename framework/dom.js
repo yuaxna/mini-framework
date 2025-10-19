@@ -57,11 +57,45 @@ function createElement(tag, attrs = {}, children = []) {
 
 /**
  * Renders a virtual node or DOM element into a container.
- * Clears the container before rendering.
+ * Preserves focus on input elements for smooth user experience.
  */
 function render(element, container) {
-  container.innerHTML = "";
-  container.appendChild(toDOM(element));
+  // Store current focus information before re-render
+  const activeElement = document.activeElement;
+  const isFocusedInput = activeElement && 
+                        activeElement.tagName === 'INPUT' && 
+                        container.contains(activeElement);
+  const inputValue = isFocusedInput ? activeElement.value : null;
+  const inputSelectionStart = isFocusedInput ? activeElement.selectionStart : null;
+  const inputSelectionEnd = isFocusedInput ? activeElement.selectionEnd : null;
+
+  const newDOM = toDOM(element);
+  
+  // Use replaceChildren for a smoother replacement (modern browsers)
+  if (container.replaceChildren) {
+    container.replaceChildren(newDOM);
+  } else {
+    // Fallback for older browsers
+    container.innerHTML = "";
+    container.appendChild(newDOM);
+  }
+
+  // Restore focus and input state after re-render
+  if (isFocusedInput) {
+    requestAnimationFrame(() => {
+      // Find the input element in the new DOM
+      const newInput = container.querySelector('input[type="text"]');
+      if (newInput) {
+        newInput.focus();
+        if (inputValue !== null) {
+          newInput.value = inputValue;
+        }
+        if (inputSelectionStart !== null && inputSelectionEnd !== null) {
+          newInput.setSelectionRange(inputSelectionStart, inputSelectionEnd);
+        }
+      }
+    });
+  }
 }
 
 export { createElement, render, toDOM };

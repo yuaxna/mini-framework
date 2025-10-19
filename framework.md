@@ -59,7 +59,6 @@ on("customEvent", (data) => console.log("Event received:", data));
 emit("customEvent", { foo: "bar" });
 ```
 
-
 ### More Advanced Examples
 
 #### 1. Global Notification System
@@ -91,37 +90,6 @@ on("something", myHandler);
 // Later, to stop listening:
 import { off } from "./framework/events.js";
 off("something", myHandler);
-```
-
-#### 4. Global Loading Spinner
-```js
-// Show/hide a loading spinner from anywhere in your app:
-on("showLoading", () => spinnerElement.style.display = "block");
-on("hideLoading", () => spinnerElement.style.display = "none");
-
-// In any async action:
-emit("showLoading");
-fetch("/api/data").then(() => emit("hideLoading"));
-```
-
-#### 5. Undo/Redo Actions
-```js
-// Listen for undo/redo events globally:
-on("undo", () => undoLastAction());
-on("redo", () => redoLastAction());
-
-// Trigger from buttons or keyboard shortcuts:
-emit("undo");
-emit("redo");
-```
-
-#### 6. Keyboard Shortcuts
-```js
-// Listen for keyboard shortcuts globally:
-window.addEventListener("keydown", (e) => {
-  if (e.ctrlKey && e.key === "z") emit("undo");
-  if (e.ctrlKey && e.key === "y") emit("redo");
-});
 ```
 
 ### Why?
@@ -200,4 +168,3 @@ import { registerRoutes, startRouter, navigate } from "./framework/router.js";
 
 ---
 
-Happy coding!
